@@ -46,7 +46,6 @@ $ALL_TESTS = array(
   'bucketupdater',
   'paramtest',
   'twodefaulttest',
-  //'reloadtest',
 );
 
 $output_file = null;

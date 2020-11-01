@@ -19,8 +19,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
+#include <cstring>
+#include <stdlib.h>
 
 #define MAX_MESSAGE_LENGTH 1024
 

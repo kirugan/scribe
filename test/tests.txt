@@ -26,7 +26,7 @@ need to edit test/tests.php to point test clients at the right place.
    - set SCRIBE_ROOT to the location of the genereated thrift interface for scribe
      (by default this gets created in src/gen-php)
    - mkdir /tmp/scribetest
-   - bin/scribed test/scribe.conf.test
+   - scribed test/scribe.conf.test
      this doesn't daemonize, so open another terminal and run:
    - php test/many_connections.php
    - test/resultChecker/resultChecker client1 /tmp/scribetest/scribe_test/scribe_test-*

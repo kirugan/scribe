@@ -40,6 +40,6 @@ print 'starting test...';
 
 many_connections_test($category, $client, $numconnections, 10000, 200000, 20, 100);
 
-print 'done';
+print "done\n";
 
 ?>
