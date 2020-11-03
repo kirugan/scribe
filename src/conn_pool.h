@@ -70,7 +70,7 @@ class scribeConn {
 };
 
 // key is hostname:port or the service
-typedef std::map<std::string, boost::shared_ptr<scribeConn> > conn_map_t;
+typedef std::map<std::string, boost::shared_ptr<scribeConn>> conn_map_t;
 
 // Scribe class to manage connection pooling
 // Maintains a map of (<host,port> or service) to scribeConn class.

@@ -41,7 +41,7 @@
 
 typedef boost::shared_ptr<scribe::thrift::LogEntry> logentry_ptr_t;
 typedef std::vector<logentry_ptr_t> logentry_vector_t;
-typedef std::vector<std::pair<std::string, int> > server_vector_t;
+typedef std::vector<std::pair<std::string, int>> server_vector_t;
 
 // scribe version
 const std::string scribeversion("2.2");

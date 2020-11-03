@@ -457,7 +457,7 @@ class BucketStore : public Store {
   bool opened;
   unsigned long bucketRange;  // used to compute key_range bucketizing
   unsigned long numBuckets;
-  std::vector<boost::shared_ptr<Store> > buckets;
+  std::vector<boost::shared_ptr<Store>> buckets;
 
   unsigned long bucketize(const std::string& message);
   std::string getMessageWithoutKey(const std::string& message);
@@ -536,7 +536,7 @@ class MultiStore : public Store {
   bool empty(struct tm* now) { return true; }
 
  protected:
-  std::vector<boost::shared_ptr<Store> > stores;
+  std::vector<boost::shared_ptr<Store>> stores;
   enum report_success_value {
     SUCCESS_ANY = 1,
     SUCCESS_ALL
@@ -580,7 +580,7 @@ class CategoryStore : public Store {
   void configureCommon(pStoreConf configuration, pStoreConf parent,
                        const std::string type);
   boost::shared_ptr<Store> modelStore;
-  std::map<std::string, boost::shared_ptr<Store> > stores;
+  std::map<std::string, boost::shared_ptr<Store>> stores;
 
  private:
   CategoryStore();

@@ -27,8 +27,8 @@
 #include "store.h"
 #include "store_queue.h"
 
-typedef std::vector<boost::shared_ptr<StoreQueue> > store_list_t;
-typedef std::map<std::string, boost::shared_ptr<store_list_t> > category_map_t;
+typedef std::vector<boost::shared_ptr<StoreQueue>> store_list_t;
+typedef std::map<std::string, boost::shared_ptr<store_list_t>> category_map_t;
 
 class scribeHandler : virtual public scribe::thrift::scribeIf,
                               public facebook::fb303::FacebookBase {

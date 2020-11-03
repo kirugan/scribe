@@ -2417,7 +2417,7 @@ bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) 
   bool success = true;
 
   boost::shared_ptr<logentry_vector_t> failed_messages(new logentry_vector_t);
-  vector<boost::shared_ptr<logentry_vector_t> > bucketed_messages;
+  vector<boost::shared_ptr<logentry_vector_t>> bucketed_messages;
   bucketed_messages.resize(numBuckets + 1);
 
   if (numBuckets == 0) {
