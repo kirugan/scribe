@@ -4,7 +4,7 @@
 FROM     ubuntu:12.04
 
 # Last Package Update & Install
-RUN apt-get update && apt-get install -y curl supervisor openssh-server net-tools iputils-ping nano \
+RUN apt-get update && apt-get install -y curl supervisor openssh-server net-tools iputils-ping vim \
  make autoconf automake flex bison libtool libevent-dev pkg-config libssl-dev libboost-all-dev libbz2-dev build-essential g++ python-dev git
 
 # Facebook Scribe
@@ -44,7 +44,7 @@ RUN cd $scribe_src/lib/py && python setup.py install
 RUN mkdir /usr/local/scribe
 RUN cp $scribe_src/examples/example2client.conf /usr/local/scribe/scribe.conf
 
-RUN apt-get install -y vim php5
+RUN apt-get install -y php5
 
 RUN cd $scribe_src/if/ && thrift -r --gen php scribe.thrift \
                        && thrift -r --gen php bucketupdater.thrift
@@ -54,3 +54,5 @@ RUN mkdir /tmp/scribetest
 RUN ln -s /usr/local/src/scribe/if/gen-php/ /usr/local/src/thrift/lib/php/src/packages
 
 WORKDIR /usr/local/src/scribe
+
+RUN make -C /usr/local/src/scribe/test/resultChecker/
