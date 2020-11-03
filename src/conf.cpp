@@ -27,7 +27,7 @@
 using namespace boost;
 using namespace std;
 
-extern shared_ptr<scribeHandler> g_Handler;
+extern boost::shared_ptr<scribeHandler> g_Handler;
 
 StoreConf::StoreConf() {
 }
@@ -58,7 +58,7 @@ void StoreConf::getAllStores(vector<pStoreConf>& _return) {
 bool StoreConf::getInt(const string& intName, long int& _return) const {
   string str;
   if (getString(intName, str)) {
-    _return = strtol(str.c_str(), NULL, 0);
+    _return = strtol(str.c_str(), nullptr, 0);
     return true;
   } else {
     return false;
@@ -68,7 +68,7 @@ bool StoreConf::getInt(const string& intName, long int& _return) const {
 bool StoreConf::getFloat(const std::string& floatName, float & _return) const {
   string str;
   if (getString(floatName, str)) {
-    _return = strtof(str.c_str(), NULL);
+    _return = strtof(str.c_str(), nullptr);
     return true;
   } else {
     return false;
@@ -79,7 +79,7 @@ bool StoreConf::getUnsigned(const string& intName,
                             unsigned long int& _return) const {
   string str;
   if (getString(intName, str)) {
-    _return = strtoul(str.c_str(), NULL, 0);
+    _return = strtoul(str.c_str(), nullptr, 0);
     return true;
   } else {
     return false;
@@ -90,7 +90,7 @@ bool StoreConf::getUnsignedLongLong(const string& llName,
                                     unsigned long long& _return) const {
   string str;
   if (getString(llName, str)) {
-    _return = strtoull(str.c_str(), NULL, 10);
+    _return = strtoull(str.c_str(), nullptr, 10);
     return true;
   } else {
     return false;

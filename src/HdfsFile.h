@@ -54,7 +54,7 @@ class HdfsLock {
   public:
     static pthread_mutex_t lock;
     static bool initLock() {
-      pthread_mutex_init(&lock, NULL);
+      pthread_mutex_init(&lock, nullptr);
       return true;
     }
 };

@@ -37,7 +37,7 @@ using namespace scribe::thrift;
 
 
 ConnPool::ConnPool() {
-  pthread_mutex_init(&mapMutex, NULL);
+  pthread_mutex_init(&mapMutex, nullptr);
 }
 
 ConnPool::~ConnPool() {
@@ -164,7 +164,7 @@ scribeConn::scribeConn(const string& hostname, unsigned long port, int timeout_)
   remoteHost(hostname),
   remotePort(port),
   timeout(timeout_) {
-  pthread_mutex_init(&mutex, NULL);
+  pthread_mutex_init(&mutex, nullptr);
 }
 
 scribeConn::scribeConn(const string& service, const server_vector_t &servers, int timeout_)
@@ -173,7 +173,7 @@ scribeConn::scribeConn(const string& service, const server_vector_t &servers, in
   serviceName(service),
   serverList(servers),
   timeout(timeout_) {
-  pthread_mutex_init(&mutex, NULL);
+  pthread_mutex_init(&mutex, nullptr);
 }
 
 scribeConn::~scribeConn() {

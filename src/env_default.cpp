@@ -63,10 +63,10 @@ unsigned long scribe::clock::nowInMsec() {
 
   // Get current time in timeval
   struct timeval tv;
-  gettimeofday(&tv, NULL);
+  gettimeofday(&tv, nullptr);
 
   // Get current time in sec
-  time_t sec = time(NULL);
+  time_t sec = time(nullptr);
 
   return ((unsigned long)sec) * 1000 + (tv.tv_usec / 1000);
 }
@@ -81,7 +81,7 @@ uint32_t scribe::integerhash::hash32(uint32_t key) {
 
 uint32_t scribe::strhash::hash32(const char *s) {
   // Use the djb2 hash (http://www.cse.yorku.ca/~oz/hash.html)
-  if (s == NULL) {
+  if (s == nullptr) {
     return 0;
   }
   uint32_t hash = 5381;

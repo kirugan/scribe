@@ -12,7 +12,7 @@
 
 using namespace std;
 
-HdfsFile::HdfsFile(const std::string& name) : FileInterface(name, false), inputBuffer_(NULL), bufferSize_(0) {
+HdfsFile::HdfsFile(const std::string& name) : FileInterface(name, false), inputBuffer_(nullptr), bufferSize_(0) {
   LOG_OPER("[hdfs] Connecting to HDFS for %s", name.c_str());
 
   // First attempt to parse the hdfs cluster from the path name specified.
@@ -134,7 +134,7 @@ unsigned long HdfsFile::fileSize() {
 
   if (fileSys) {
     hdfsFileInfo* pFileInfo = hdfsGetPathInfo(fileSys, filename.c_str());
-    if (pFileInfo != NULL) {
+    if (pFileInfo != nullptr) {
       size = pFileInfo->mSize;
       hdfsFreeFileInfo(pFileInfo, 1);
     }
@@ -164,12 +164,12 @@ void HdfsFile::listImpl(const std::string& path,
       for(int i = 0; i < numEntries; i++) {
         char* pathname = pHdfsFileInfo[i].mName;
         char* filename = rindex(pathname, '/');
-        if (filename != NULL) {
+        if (filename != nullptr) {
           _return.push_back(filename+1);
         }
       }
       hdfsFreeFileInfo(pHdfsFileInfo, numEntries);
-    // A NULL indicates error
+    // A nullptr indicates error
     } else {
       throw std::runtime_error("hdfsListDirectory call failed");
     }
@@ -234,17 +234,17 @@ hdfsFS HdfsFile::connectToPath(const char* uri) {
   // No ':' or ':' is the last character.
   if (!colon || !colon[1]) {
     LOG_OPER("[hdfs] Missing port specification: \"%s\"", uri);
-    return NULL;
+    return nullptr;
   }
  
-  char* endptr = NULL;
+  char* endptr = nullptr;
   const long port = strtol(colon + 1, &endptr, 10);
   if (port < 0) {
     LOG_OPER("[hdfs] Invalid port specification (negative): \"%s\"", uri);
-    return NULL;
+    return nullptr;
   } else if (port > std::numeric_limits<tPort>::max()) {
     LOG_OPER("[hdfs] Invalid port specification (out of range): \"%s\"", uri);
-    return NULL;
+    return nullptr;
   }
  
   char* const host = (char*) malloc(colon - uri + 1);

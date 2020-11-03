@@ -10,10 +10,9 @@ using namespace apache::thrift::transport;
 using namespace facebook;
 using namespace facebook::fb303;
 using namespace scribe::thrift;
-using boost::shared_ptr;
-extern shared_ptr<scribeHandler> g_Handler;
+extern boost::shared_ptr<scribeHandler> g_Handler;
 
-DynamicBucketUpdater* DynamicBucketUpdater::instance_ = NULL;
+DynamicBucketUpdater* DynamicBucketUpdater::instance_ = nullptr;
 Mutex DynamicBucketUpdater::instanceLock_;
 
 // bucket updater connection error
@@ -216,7 +215,7 @@ bool DynamicBucketUpdater::getHostInternal(const string &category,
                                            uint32_t connTimeout,
                                            uint32_t sendTimeout,
                                            uint32_t recvTimeout) {
-  time_t now = time(NULL);
+  time_t now = time(nullptr);
 
   // periodic check whether we need to fetch the mapping, or need to
   // update
@@ -341,7 +340,7 @@ bool DynamicBucketUpdater::updateInternal(
     catMap_.erase(catIter);
   }
 
-  shared_ptr<TSocket> socket = shared_ptr<TSocket>(
+  boost::shared_ptr<TSocket> socket = boost::shared_ptr<TSocket>(
                                 new TSocket(remoteHost, remotePort));
 
   if (!socket) {
@@ -362,10 +361,10 @@ bool DynamicBucketUpdater::updateInternal(
   socket->setRecvTimeout(recvTimeout);
   socket->setSendTimeout(sendTimeout);
 
-  shared_ptr<TFramedTransport> framedTransport = shared_ptr<TFramedTransport>(
+  boost::shared_ptr<TFramedTransport> framedTransport = boost::shared_ptr<TFramedTransport>(
                 new TFramedTransport(socket));
   framedTransport->open();
-  shared_ptr<TBinaryProtocol> protocol = shared_ptr<TBinaryProtocol>(
+  boost::shared_ptr<TBinaryProtocol> protocol = boost::shared_ptr<TBinaryProtocol>(
                                       new TBinaryProtocol(framedTransport));
 
   // no strict version checking
@@ -381,7 +380,7 @@ bool DynamicBucketUpdater::updateInternal(
   }
 
   CategoryEntry catEntry(category, ttl);
-  catEntry.lastUpdated_ = time(NULL);
+  catEntry.lastUpdated_ = time(nullptr);
   // update bucket id host mappings
   for (map<int32_t, HostPort>::const_iterator iter = mapping.begin();
       iter != mapping.end(); ++iter) {

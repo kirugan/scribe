@@ -410,7 +410,7 @@ class NetworkStore : public Store {
 
   // state
   bool opened;
-  boost::shared_ptr<scribeConn> unpooledConn; // null if useConnPool
+  boost::shared_ptr<scribeConn> unpooledConn; // nullptr if useConnPool
 
  private:
   // disallow copy, assignment, and empty construction

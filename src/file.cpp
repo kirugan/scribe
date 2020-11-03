@@ -27,7 +27,9 @@
 #define LARGE_BUFFER_SIZE (16 * INITIAL_BUFFER_SIZE) /* arbitrarily chosen */
 #define UINT_SIZE 4
 
-using namespace std;
+using std::fstream;
+using std::string;
+using std::ios_base;
 using boost::shared_ptr;
 
 boost::shared_ptr<FileInterface> FileInterface::createFileInterface(const std::string& type,
@@ -59,13 +61,13 @@ FileInterface::~FileInterface() {
 }
 
 StdFile::StdFile(const std::string& name, bool frame)
-  : FileInterface(name, frame), inputBuffer(NULL), bufferSize(0) {
+  : FileInterface(name, frame), inputBuffer(nullptr), bufferSize(0) {
 }
 
 StdFile::~StdFile() {
   if (inputBuffer) {
     delete[] inputBuffer;
-    inputBuffer = NULL;
+    inputBuffer = nullptr;
   }
 }
 
@@ -176,7 +178,7 @@ StdFile::readNext(std::string& _return) {
   if (!inputBuffer) {
     bufferSize = INITIAL_BUFFER_SIZE;
     inputBuffer = (char *) malloc(bufferSize);
-    if (inputBuffer == NULL) {
+    if (inputBuffer == nullptr) {
       CALC_LOSS();
       LOG_OPER("WARNING: nomem Data Loss loss %ld bytes in %s", size,
           filename.c_str());
@@ -207,7 +209,7 @@ StdFile::readNext(std::string& _return) {
       LOG_OPER("WARNING: allocating large buffer Corruption? %d", bufferSize);
     }
   }
-  if (inputBuffer == NULL) {
+  if (inputBuffer == nullptr) {
     CALC_LOSS();
     LOG_OPER("WARNING: nomem Corruption? Data Loss %ld bytes in %s", size,
         filename.c_str());
@@ -222,7 +224,7 @@ StdFile::readNext(std::string& _return) {
   }
   if (bufferSize > LARGE_BUFFER_SIZE) {
     free(inputBuffer);
-    inputBuffer = NULL;
+    inputBuffer = nullptr;
   }
   return (size);
 #undef CALC_LOSS

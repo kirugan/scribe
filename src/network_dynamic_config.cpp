@@ -28,8 +28,8 @@ static NetworkDynamicConfigMod netConfigMods[] = {
   },
   {
     "",
-    NULL,
-    NULL,
+    nullptr,
+    nullptr,
   },
 };
 
@@ -42,6 +42,6 @@ NetworkDynamicConfigMod* getNetworkDynamicConfigMod(const char* name) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 

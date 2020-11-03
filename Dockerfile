@@ -30,7 +30,7 @@ RUN cd $thrift_src/lib/py \
 ENV scribe_src /usr/local/src/scribe
 COPY ./ ${scribe_src}
 RUN cd $scribe_src && ./bootstrap.sh \
- && ./configure CPPFLAGS="-DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -DBOOST_FILESYSTEM_VERSION=2" LIBS="-lboost_system -lboost_filesystem" \
+ && ./configure CPPFLAGS="-std=c++0x -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -DBOOST_FILESYSTEM_VERSION=2" LIBS="-lboost_system -lboost_filesystem" \
  && make && make install
 
 # ENV

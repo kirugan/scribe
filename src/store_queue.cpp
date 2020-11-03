@@ -34,7 +34,7 @@ using namespace scribe::thrift;
 void* threadStatic(void *this_ptr) {
   StoreQueue *queue_ptr = (StoreQueue*)this_ptr;
   queue_ptr->threadMember();
-  return NULL;
+  return nullptr;
 }
 
 StoreQueue::StoreQueue(const string& type, const string& category,
@@ -152,7 +152,7 @@ void StoreQueue::stop() {
     }
     pthread_mutex_unlock(&hasWorkMutex);
 
-    pthread_join(storeThread, NULL);
+    pthread_join(storeThread, nullptr);
   }
 }
 
@@ -175,7 +175,7 @@ void StoreQueue::open() {
   }
 }
 
-shared_ptr<Store> StoreQueue::copyStore(const std::string &category) {
+boost::shared_ptr<Store> StoreQueue::copyStore(const std::string &category) {
   return store->copy(category);
 }
 
@@ -200,7 +200,7 @@ void StoreQueue::threadMember() {
   }
 
   if (!store) {
-    LOG_OPER("store is NULL, store thread exiting");
+    LOG_OPER("store is nullptr, store thread exiting");
     return;
   }
 
@@ -306,7 +306,7 @@ void StoreQueue::threadMember() {
   store->close();
 }
 
-void StoreQueue::processFailedMessages(shared_ptr<logentry_vector_t> messages) {
+void StoreQueue::processFailedMessages(boost::shared_ptr<logentry_vector_t> messages) {
   // If the store was not able to process these messages, we will either
   // requeue them or give up depending on the value of mustSucceed
 
@@ -329,12 +329,12 @@ void StoreQueue::storeInitCommon() {
   // model store doesn't need this stuff
   if (!isModel) {
     msgQueue = boost::shared_ptr<logentry_vector_t>(new logentry_vector_t);
-    pthread_mutex_init(&cmdMutex, NULL);
-    pthread_mutex_init(&msgMutex, NULL);
-    pthread_mutex_init(&hasWorkMutex, NULL);
-    pthread_cond_init(&hasWorkCond, NULL);
+    pthread_mutex_init(&cmdMutex, nullptr);
+    pthread_mutex_init(&msgMutex, nullptr);
+    pthread_mutex_init(&hasWorkMutex, nullptr);
+    pthread_cond_init(&hasWorkCond, nullptr);
 
-    pthread_create(&storeThread, NULL, threadStatic, (void*) this);
+    pthread_create(&storeThread, nullptr, threadStatic, (void*) this);
   }
 }
 
