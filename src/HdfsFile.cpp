@@ -199,7 +199,7 @@ bool HdfsFile::createDirectory(std::string path) {
 bool HdfsFile::createSymlink(std::string oldpath, std::string newpath) {
   LOG_OPER("[hdfs] Creating symlink oldpath %s newpath %s",
            oldpath.c_str(), newpath.c_str());
-  HdfsFile* link = new HdfsFile(newpath);
+  std::unique_ptr<HdfsFile> link(new HdfsFile(newpath));
   if (link->openWrite() == false) {
     LOG_OPER("[hdfs] Creating symlink failed because %s already exists.",
              newpath.c_str());
