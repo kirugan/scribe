@@ -102,7 +102,7 @@ void StoreQueue::addMessage(boost::shared_ptr<LogEntry> entry) {
     pthread_mutex_unlock(&msgMutex);
 
     // Wake up store thread if we have enough messages
-    if (waitForWork == true) {
+    if (waitForWork) {
       // signal that there is work to do if not already signaled
       pthread_mutex_lock(&hasWorkMutex);
       if (!hasWork) {
