@@ -1854,7 +1854,7 @@ bool NetworkStore::loadFromList(const std::string &list, unsigned long defaultPo
   vector<string> split;
   for (vector<string>::iterator iter = strs.begin();
        iter != strs.end();
-       iter++) {
+       ++iter) {
     if (iter->find(":") != string::npos) {
       // split the port
       boost::split(split, (*iter), boost::is_any_of(":"));
@@ -2754,10 +2754,8 @@ void MultiStore::configure(pStoreConf configuration, pStoreConf parent) {
 }
 
 void MultiStore::close() {
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    (*iter)->close();
+  for (auto& store: stores) {
+    store->close();
   }
 }
 
@@ -2765,10 +2763,8 @@ bool MultiStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
   bool all_result = true;
   bool any_result = false;
   bool cur_result;
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    cur_result = (*iter)->handleMessages(messages);
+  for (auto& store: stores) {
+    cur_result = store->handleMessages(messages);
     any_result |= cur_result;
     all_result &= cur_result;
   }

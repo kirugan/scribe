@@ -715,7 +715,7 @@ bool scribeHandler::configureStore(pStoreConf store_conf, int *numstores) {
 
     // create a store for each category
     vector<string>::iterator iter;
-    for (iter = category_list.begin(); iter < category_list.end(); iter++) {
+    for (iter = category_list.begin(); iter < category_list.end(); ++iter) {
        boost::shared_ptr<StoreQueue> result =
          configureStoreCategory(store_conf, *iter, model);
 

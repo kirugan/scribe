@@ -50,8 +50,8 @@ void StoreConf::setParent(pStoreConf pParent) {
 }
 
 void StoreConf::getAllStores(vector<pStoreConf>& _return) {
-  for (store_conf_map_t::iterator iter = stores.begin(); iter != stores.end(); ++iter) {
-    _return.push_back(iter->second);
+  for (const auto& item: stores) {
+    _return.push_back(item.second);
   }
 }
 
@@ -308,19 +308,17 @@ ostream& StoreConf::print(ostream& os, uint32_t depth,
                           bool useSpace, uint32_t tabw) const {
   // we only need to iterator through keys. as map guaranteed keys
   // are weakly ordered, so we will get consistent output.
-  for (string_map_t::const_iterator iter = values.begin();
-        iter != values.end(); iter++) {
+  for (const auto& item: values) {
     int len = useSpace ? depth * tabw : depth;
-    os << indent(depth, useSpace, tabw) << iter->first
-       << "=" << iter->second << endl;
+    os << indent(depth, useSpace, tabw) << item.first
+       << "=" << item.second << endl;
   }
   // print out sub stores
-  for (store_conf_map_t::const_iterator iter = stores.begin();
-        iter != stores.end(); iter++) {
-    os << indent(depth, useSpace, tabw) << "<" << iter->first << ">"
+  for (const auto& item: stores) {
+    os << indent(depth, useSpace, tabw) << "<" << item.first << ">"
        << endl;
-    iter->second->print(os, depth + 1, useSpace, tabw);
-    os << indent(depth, useSpace, tabw) << "</" << iter->first << ">"
+    item.second->print(os, depth + 1, useSpace, tabw);
+    os << indent(depth, useSpace, tabw) << "</" << item.first << ">"
     << endl;
   }
 

@@ -382,10 +382,9 @@ bool DynamicBucketUpdater::updateInternal(
   CategoryEntry catEntry(category, ttl);
   catEntry.lastUpdated_ = time(nullptr);
   // update bucket id host mappings
-  for (map<int32_t, HostPort>::const_iterator iter = mapping.begin();
-      iter != mapping.end(); ++iter) {
-    uint32_t bid = iter->first;
-    const HostPort &hp = iter->second;
+  for (const auto& item: mapping) {
+    uint32_t bid = item.first;
+    const HostPort &hp = item.second;
     HostEntry hentry;
     hentry.host_ = hp.host;
     hentry.port_ = hp.port;
