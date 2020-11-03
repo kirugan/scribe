@@ -4,7 +4,7 @@
 FROM     ubuntu:12.04
 
 # Last Package Update & Install
-RUN apt-get update && apt-get install -y curl supervisor openssh-server net-tools iputils-ping vim \
+RUN apt-get update && apt-get install -y curl cmake supervisor openssh-server net-tools iputils-ping vim \
  make autoconf automake flex bison libtool libevent-dev pkg-config libssl-dev libboost-all-dev libbz2-dev build-essential g++ python-dev git
 
 # Facebook Scribe
@@ -29,9 +29,12 @@ RUN cd $thrift_src/lib/py \
 # Scribe
 ENV scribe_src /usr/local/src/scribe
 COPY ./ ${scribe_src}
-RUN cd $scribe_src && ./bootstrap.sh \
- && ./configure CPPFLAGS="-std=c++0x -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -DBOOST_FILESYSTEM_VERSION=2" LIBS="-lboost_system -lboost_filesystem" \
- && make && make install
+
+RUN cd $scribe_src && \
+       thrift --gen cpp:pure_enums -o src/  ./if/scribe.thrift && \
+       thrift --gen cpp:pure_enums -o src/ ./if/bucketupdater.thrift && \
+       ls -l src/gen-cpp && \
+       cmake . && make
 
 # ENV
 ENV LD_LIBRARY_PATH /usr/local/lib
