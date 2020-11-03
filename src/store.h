@@ -61,6 +61,10 @@ class Store {
         const std::string &type, bool multi_category = false);
   virtual ~Store();
 
+  // disallow copy, assignment, and empty construction
+  Store(Store& rhs) = delete;
+  Store& operator=(Store& rhs) = delete;
+
   virtual boost::shared_ptr<Store> copy(const std::string &category) = 0;
   virtual bool open() = 0;
   virtual bool isOpen() = 0;
@@ -98,10 +102,6 @@ class Store {
 
   StoreQueue* storeQueue;
   pStoreConf storeConf;
- private:
-  // disallow copy, assignment, and empty construction
-  Store(Store& rhs);
-  Store& operator=(Store& rhs);
 };
 
 /*
@@ -114,6 +114,10 @@ class FileStoreBase : public Store {
                 const std::string& category,
                 const std::string &type, bool multi_category);
   ~FileStoreBase();
+
+  // disallow copy, assignment, and empty construction
+  FileStoreBase(FileStoreBase& rhs) = delete;
+  FileStoreBase& operator=(FileStoreBase& rhs) = delete;
 
   virtual void copyCommon(const FileStoreBase *base);
   bool open();
@@ -177,11 +181,6 @@ class FileStoreBase : public Store {
   unsigned long eventsWritten; // This is how many events this process has
                                // written to the currently open file. It is NOT
                                // necessarily the number of lines in the file
-
- private:
-  // disallow copy, assignment, and empty construction
-  FileStoreBase(FileStoreBase& rhs);
-  FileStoreBase& operator=(FileStoreBase& rhs);
 };
 
 /*
@@ -194,6 +193,11 @@ class FileStore : public FileStoreBase {
   FileStore(StoreQueue* storeq, const std::string& category,
             bool multi_category, bool is_buffer_file = false);
   ~FileStore();
+
+  // disallow copy, assignment, and empty construction
+  // (todo(kirugan) this ^ comment copied as it was, maybe deprecate empty construction?
+  FileStore(FileStore& rhs) = delete;
+  FileStore& operator=(FileStore& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool handleMessages(boost::shared_ptr<logentry_vector_t> messages);
@@ -226,9 +230,6 @@ class FileStore : public FileStoreBase {
   boost::shared_ptr<FileInterface> writeFile;
 
  private:
-  // disallow copy, assignment, and empty construction
-  FileStore(FileStore& rhs);
-  FileStore& operator=(FileStore& rhs);
   long lostBytes_;
 };
 
@@ -241,6 +242,10 @@ class ThriftFileStore : public FileStoreBase {
                   const std::string& category,
                   bool multi_category);
   ~ThriftFileStore();
+
+  // disallow copy, assignment, and empty construction
+  ThriftFileStore(ThriftFileStore& rhs) = delete;
+  ThriftFileStore& operator=(ThriftFileStore& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool handleMessages(boost::shared_ptr<logentry_vector_t> messages);
@@ -260,11 +265,6 @@ class ThriftFileStore : public FileStoreBase {
   unsigned long flushFrequencyMs;
   unsigned long msgBufferSize;
   unsigned long useSimpleFile;
-
- private:
-  // disallow copy, assignment, and empty construction
-  ThriftFileStore(ThriftFileStore& rhs);
-  ThriftFileStore& operator=(ThriftFileStore& rhs);
 };
 
 /*
@@ -284,6 +284,11 @@ class BufferStore : public Store {
               const std::string& category,
               bool multi_category);
   ~BufferStore();
+
+  // disallow copy, assignment, and empty construction
+  BufferStore() = delete;
+  BufferStore(BufferStore& rhs) = delete;
+  BufferStore& operator=(BufferStore& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool handleMessages(boost::shared_ptr<logentry_vector_t> messages);
@@ -355,12 +360,6 @@ class BufferStore : public Store {
                                   // incoming messages is calculated by
                                   // multiple max_queue_size with
                                   // buffer_bypass_max_ratio.
-
- private:
-  // disallow copy, assignment, and empty construction
-  BufferStore();
-  BufferStore(BufferStore& rhs);
-  BufferStore& operator=(BufferStore& rhs);
 };
 
 /*
@@ -375,6 +374,11 @@ class NetworkStore : public Store {
                const std::string& category,
                bool multi_category);
   ~NetworkStore();
+
+  // disallow copy, assignment, and empty construction
+  NetworkStore() = delete;
+  NetworkStore(NetworkStore& rhs) = delete;
+  NetworkStore& operator=(NetworkStore& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool handleMessages(boost::shared_ptr<logentry_vector_t> messages);
@@ -411,12 +415,6 @@ class NetworkStore : public Store {
   // state
   bool opened;
   boost::shared_ptr<scribeConn> unpooledConn; // nullptr if useConnPool
-
- private:
-  // disallow copy, assignment, and empty construction
-  NetworkStore();
-  NetworkStore(NetworkStore& rhs);
-  NetworkStore& operator=(NetworkStore& rhs);
 };
 
 /*
@@ -430,6 +428,11 @@ class BucketStore : public Store {
               const std::string& category,
               bool multi_category);
   ~BucketStore();
+
+  // disallow copy, assignment, and emtpy construction
+  BucketStore() = delete;
+  BucketStore(BucketStore& rhs) = delete;
+  BucketStore& operator=(BucketStore& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool handleMessages(boost::shared_ptr<logentry_vector_t> messages);
@@ -463,10 +466,6 @@ class BucketStore : public Store {
   std::string getMessageWithoutKey(const std::string& message);
 
  private:
-  // disallow copy, assignment, and emtpy construction
-  BucketStore();
-  BucketStore(BucketStore& rhs);
-  BucketStore& operator=(BucketStore& rhs);
   void createBucketsFromBucket(pStoreConf configuration,
                                pStoreConf bucket_conf);
   void createBuckets(pStoreConf configuration);
@@ -482,6 +481,11 @@ class NullStore : public Store {
             const std::string& category,
             bool multi_category);
   virtual ~NullStore();
+
+  // disallow empty constructor, copy and assignment
+  NullStore() = delete;
+  NullStore(Store& rhs) = delete;
+  NullStore& operator=(Store& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool open();
@@ -499,13 +503,6 @@ class NullStore : public Store {
                              struct tm* now);
   virtual void deleteOldest(struct tm* now);
   virtual bool empty(struct tm* now);
-
-
- private:
-  // disallow empty constructor, copy and assignment
-  NullStore();
-  NullStore(Store& rhs);
-  NullStore& operator=(Store& rhs);
 };
 
 /*
@@ -518,6 +515,11 @@ class MultiStore : public Store {
              const std::string& category,
              bool multi_category);
   ~MultiStore();
+
+  // disallow copy, assignment, and empty construction
+  MultiStore() = delete;
+  MultiStore(Store& rhs) = delete;
+  MultiStore& operator=(Store& rhs) = delete;
 
   boost::shared_ptr<Store> copy(const std::string &category);
   bool open();
@@ -542,12 +544,6 @@ class MultiStore : public Store {
     SUCCESS_ALL
   };
   report_success_value report_success;
-
- private:
-  // disallow copy, assignment, and empty construction
-  MultiStore();
-  MultiStore(Store& rhs);
-  MultiStore& operator=(Store& rhs);
 };
 
 

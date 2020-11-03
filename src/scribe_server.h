@@ -37,6 +37,11 @@ class scribeHandler : virtual public scribe::thrift::scribeIf,
   scribeHandler(unsigned long int port, const std::string& conf_file);
   ~scribeHandler();
 
+  // disallow empty construction, copy, and assignment
+  scribeHandler() = delete;
+  scribeHandler(const scribeHandler& rhs) = delete;
+  const scribeHandler& operator=(const scribeHandler& rhs) = delete;
+
   void shutdown();
   void initialize();
   void reinitialize();
@@ -107,12 +112,6 @@ class scribeHandler : virtual public scribe::thrift::scribeIf,
    */
   boost::shared_ptr<apache::thrift::concurrency::ReadWriteMutex>
     scribeHandlerLock;
-
-  // disallow empty construction, copy, and assignment
-  scribeHandler();
-  scribeHandler(const scribeHandler& rhs);
-  const scribeHandler& operator=(const scribeHandler& rhs);
-
  protected:
   bool throttleDeny(int num_messages); // returns true if overloaded
   void deleteCategoryMap(category_map_t& cats);

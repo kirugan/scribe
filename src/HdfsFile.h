@@ -15,6 +15,11 @@ class HdfsFile : public FileInterface {
   HdfsFile(const std::string& name);
   virtual ~HdfsFile();
 
+  // disallow copy, assignment, and empty construction
+  HdfsFile() = delete;
+  HdfsFile(HdfsFile& rhs) = delete;
+  HdfsFile& operator=(HdfsFile& rhs) = delete;
+
   static void init();        // initialize hdfs subsystem
   bool openRead();           // open for reading file
   bool openWrite();          // open for appending to file
@@ -37,11 +42,6 @@ class HdfsFile : public FileInterface {
   hdfsFS fileSys;
   hdfsFile hfile;
   hdfsFS connectToPath(const char* uri);
-
-  // disallow copy, assignment, and empty construction
-  HdfsFile();
-  HdfsFile(HdfsFile& rhs);
-  HdfsFile& operator=(HdfsFile& rhs);
 };
 
 /**

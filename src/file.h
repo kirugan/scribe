@@ -62,6 +62,11 @@ class StdFile : public FileInterface {
   StdFile(const std::string& name, bool framed);
   virtual ~StdFile();
 
+  // disallow copy, assignment, and empty construction
+  StdFile() = delete;
+  StdFile(StdFile& rhs) = delete;
+  StdFile& operator=(StdFile& rhs) = delete;
+
   bool openRead();
   bool openWrite();
   bool openTruncate();
@@ -83,11 +88,6 @@ class StdFile : public FileInterface {
   char* inputBuffer;
   unsigned bufferSize;
   std::fstream file;
-
-  // disallow copy, assignment, and empty construction
-  StdFile();
-  StdFile(StdFile& rhs);
-  StdFile& operator=(StdFile& rhs);
 };
 
 #endif // !defined SCRIBE_FILE_H
