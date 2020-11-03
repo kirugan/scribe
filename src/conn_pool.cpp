@@ -290,10 +290,8 @@ scribeConn::send(boost::shared_ptr<logentry_vector_t> messages) {
   // but we need to use them internally to avoid even more copies.
   std::vector<LogEntry> msgs;
   msgs.reserve(size);
-  for (logentry_vector_t::iterator iter = messages->begin();
-       iter != messages->end();
-       ++iter) {
-    msgs.push_back(**iter);
+  for (auto& entry: *messages) {
+    msgs.push_back(*entry);
   }
   ResultCode result = TRY_LATER;
   try {

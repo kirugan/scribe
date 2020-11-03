@@ -602,10 +602,8 @@ void scribeHandler::initialize() {
     // at the end will be deleted.
     std::vector<pStoreConf> store_confs;
     config.getAllStores(store_confs);
-    for (std::vector<pStoreConf>::iterator iter = store_confs.begin();
-         iter != store_confs.end();
-         ++iter) {
-        pStoreConf store_conf = (*iter);
+    for (auto& conf: store_confs) {
+        pStoreConf store_conf = conf;
 
         bool success = configureStore(store_conf, &numstores);
 
@@ -714,11 +712,8 @@ bool scribeHandler::configureStore(pStoreConf store_conf, int *numstores) {
     }
 
     // create a store for each category
-    vector<string>::iterator iter;
-    for (iter = category_list.begin(); iter < category_list.end(); ++iter) {
-       boost::shared_ptr<StoreQueue> result =
-         configureStoreCategory(store_conf, *iter, model);
-
+    for (auto& category: category_list) {
+      auto result = configureStoreCategory(store_conf, category, model);
       if (!result) {
         return false;
       }

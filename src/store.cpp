@@ -68,9 +68,8 @@ const string meta_logfile_prefix = "scribe_meta<new_logfile>: ";
 // Checks if we should try sending a dummy Log in the n/w store
 bool shouldSendDummy(boost::shared_ptr<logentry_vector_t> messages) {
   size_t size = 0;
-  for (logentry_vector_t::iterator iter = messages->begin();
-      iter != messages->end(); ++iter) {
-    size += (**iter).message.size();
+  for (auto& entry: *messages) {
+    size += entry->message.size();
     if (size > DEFAULT_NETWORKSTORE_DUMMY_THRESHOLD) {
       return true;
     }
@@ -460,11 +459,8 @@ int FileStoreBase::findNewestFile(const string& base_filename) {
 
   int max_suffix = -1;
   std::string retval;
-  for (std::vector<std::string>::iterator iter = files.begin();
-       iter != files.end();
-       ++iter) {
-
-    int suffix = getFileSuffix(*iter, base_filename);
+  for (const auto& file: files) {
+    int suffix = getFileSuffix(file, base_filename);
     if (suffix > max_suffix) {
       max_suffix = suffix;
     }
@@ -478,11 +474,8 @@ int FileStoreBase::findOldestFile(const string& base_filename) {
 
   int min_suffix = -1;
   std::string retval;
-  for (std::vector<std::string>::iterator iter = files.begin();
-       iter != files.end();
-       ++iter) {
-
-    int suffix = getFileSuffix(*iter, base_filename);
+  for (const auto& file: files) {
+    int suffix = getFileSuffix(file, base_filename);
     if (suffix >= 0 &&
         (min_suffix == -1 || suffix < min_suffix)) {
       min_suffix = suffix;
@@ -1027,10 +1020,8 @@ bool FileStore::empty(struct tm* now) {
   std::vector<std::string> files = FileInterface::list(filePath, fsType);
 
   std::string base_filename = makeBaseFilename(now);
-  for (std::vector<std::string>::iterator iter = files.begin();
-       iter != files.end();
-       ++iter) {
-    int suffix =  getFileSuffix(*iter, base_filename);
+  for (const auto& file: files) {
+    int suffix =  getFileSuffix(file, base_filename);
     if (-1 != suffix) {
       std::string fullname = makeFullFilename(suffix, now);
       boost::shared_ptr<FileInterface> file = FileInterface::createFileInterface(fsType,
@@ -1852,15 +1843,13 @@ bool NetworkStore::loadFromList(const std::string &list, unsigned long defaultPo
   vector<string> strs;
   boost::split(strs, list, boost::is_any_of("\t "));
   vector<string> split;
-  for (vector<string>::iterator iter = strs.begin();
-       iter != strs.end();
-       ++iter) {
-    if (iter->find(":") != string::npos) {
+  for (auto& str: strs) {
+    if (str.find(":") != string::npos) {
       // split the port
-      boost::split(split, (*iter), boost::is_any_of(":"));
+      boost::split(split, str, boost::is_any_of(":"));
       _return.push_back(pair<string, int>(split[0], atoi(split[1].c_str())));
     } else {
-      _return.push_back(pair<string, int>((*iter), defaultPort));
+      _return.push_back(pair<string, int>(str, defaultPort));
     }
   }
   return true;
@@ -2324,11 +2313,8 @@ bool BucketStore::open() {
     return false;
   }
 
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = buckets.begin();
-       iter != buckets.end();
-       ++iter) {
-
-    if (!(*iter)->open()) {
+  for (auto& bucket: buckets) {
+    if (!bucket->open()) {
       close();
       opened = false;
       return false;
@@ -2346,27 +2332,22 @@ void BucketStore::close() {
   // don't check opened, because we can call this when some, but
   // not all, contained stores are opened. Calling close on a contained
   // store that's already closed shouldn't hurt anything.
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = buckets.begin();
-       iter != buckets.end();
-       ++iter) {
-    (*iter)->close();
+  for (auto& bucket: buckets) {
+    bucket->close();
   }
   opened = false;
 }
 
 void BucketStore::flush() {
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = buckets.begin();
-       iter != buckets.end();
-       ++iter) {
-    (*iter)->flush();
+  for (auto& bucket: buckets) {
+    bucket->flush();
   }
 }
 
 string BucketStore::getStatus() {
-
   string retval = Store::getStatus();
 
-  std::vector<boost::shared_ptr<Store>>::iterator iter = buckets.begin();
+  auto iter = buckets.begin();
   while (retval.empty() && iter != buckets.end()) {
     retval = (*iter)->getStatus();
     ++iter;
@@ -2398,10 +2379,8 @@ boost::shared_ptr<Store> BucketStore::copy(const std::string &category) {
   store->bucketType = bucketType;
   store->delimiter = delimiter;
 
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = buckets.begin();
-       iter != buckets.end();
-       ++iter) {
-    store->buckets.push_back((*iter)->copy(category));
+  for (auto& bucket: buckets) {
+    store->buckets.push_back(bucket->copy(category));
   }
 
   return copied;
@@ -2428,17 +2407,15 @@ bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) 
   }
 
   // batch messages by bucket
-  for (logentry_vector_t::iterator iter = messages->begin();
-       iter != messages->end();
-       ++iter) {
-    unsigned bucket = bucketize((*iter)->message);
+  for (auto &entry: *messages) {
+    unsigned bucket = bucketize(entry->message);
 
     if (!bucketed_messages[bucket]) {
       bucketed_messages[bucket] =
         boost::shared_ptr<logentry_vector_t> (new logentry_vector_t);
     }
 
-    bucketed_messages[bucket]->push_back(*iter);
+    bucketed_messages[bucket]->push_back(entry);
   }
 
   // handle all batches of messages
@@ -2452,12 +2429,10 @@ bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) 
         boost::shared_ptr<logentry_vector_t> key_removed =
           boost::shared_ptr<logentry_vector_t> (new logentry_vector_t);
 
-        for (logentry_vector_t::iterator iter = batch->begin();
-             iter != batch->end();
-             ++iter) {
+        for (auto& batchEntry: *batch) {
           logentry_ptr_t entry = logentry_ptr_t(new LogEntry);
-          entry->category = (*iter)->category;
-          entry->message = getMessageWithoutKey((*iter)->message);
+          entry->category = batchEntry->category;
+          entry->message = getMessageWithoutKey(batchEntry->message);
           key_removed->push_back(entry);
         }
         batch = key_removed;
@@ -2637,10 +2612,8 @@ boost::shared_ptr<Store> MultiStore::copy(const std::string &category) {
   MultiStore *store = new MultiStore(storeQueue, category, multiCategory);
   store->report_success = this->report_success;
   boost::shared_ptr<Store> tmp_copy;
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    tmp_copy = (*iter)->copy(category);
+  for (auto& itemStore: stores) {
+    tmp_copy = itemStore->copy(category);
     store->stores.push_back(tmp_copy);
   }
 
@@ -2651,10 +2624,8 @@ bool MultiStore::open() {
   bool all_result = true;
   bool any_result = false;
   bool cur_result;
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    cur_result = (*iter)->open();
+  for (auto& store: stores) {
+    cur_result = store->open();
     any_result |= cur_result;
     all_result &= cur_result;
   }
@@ -2665,10 +2636,8 @@ bool MultiStore::isOpen() {
   bool all_result = true;
   bool any_result = false;
   bool cur_result;
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    cur_result = (*iter)->isOpen();
+  for (auto& store: stores) {
+    cur_result = store->isOpen();
     any_result |= cur_result;
     all_result &= cur_result;
   }
@@ -2777,18 +2746,14 @@ bool MultiStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
 
 // Call periodicCheck on all contained stores
 void MultiStore::periodicCheck() {
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    (*iter)->periodicCheck();
+  for (auto& store: stores) {
+    store->periodicCheck();
   }
 }
 
 void MultiStore::flush() {
-  for (std::vector<boost::shared_ptr<Store>>::iterator iter = stores.begin();
-       iter != stores.end();
-       ++iter) {
-    (*iter)->flush();
+  for (auto& store: stores) {
+    store->flush();
   }
 }
 
@@ -2817,22 +2782,16 @@ boost::shared_ptr<Store> CategoryStore::copy(const std::string &category) {
 
 bool CategoryStore::open() {
   bool result = true;
-
-  for (map<string, boost::shared_ptr<Store>>::iterator iter = stores.begin();
-      iter != stores.end();
-      ++iter) {
-    result &= iter->second->open();
+  for (auto& item: stores) {
+    result &= item.second->open();
   }
 
   return result;
 }
 
 bool CategoryStore::isOpen() {
-
-  for (map<string, boost::shared_ptr<Store>>::iterator iter = stores.begin();
-      iter != stores.end();
-      ++iter) {
-    if (!iter->second->isOpen()) {
+  for (auto& item: stores) {
+    if (!item.second->isOpen()) {
       return false;
     }
   }
@@ -2886,10 +2845,8 @@ void CategoryStore::configureCommon(pStoreConf configuration,
 }
 
 void CategoryStore::close() {
-  for (map<string, boost::shared_ptr<Store>>::iterator iter = stores.begin();
-      iter != stores.end();
-      ++iter) {
-    iter->second->close();
+  for (auto& item: stores) {
+    item.second->close();
   }
 }
 
@@ -2945,18 +2902,14 @@ bool CategoryStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages
 }
 
 void CategoryStore::periodicCheck() {
-  for (map<string, boost::shared_ptr<Store>>::iterator iter = stores.begin();
-      iter != stores.end();
-      ++iter) {
-    iter->second->periodicCheck();
+  for (auto& item: stores) {
+    item.second->periodicCheck();
   }
 }
 
 void CategoryStore::flush() {
-  for (map<string, boost::shared_ptr<Store>>::iterator iter = stores.begin();
-      iter != stores.end();
-      ++iter) {
-    iter->second->flush();
+  for (auto& item: stores) {
+    item.second->flush();
   }
 }
 
