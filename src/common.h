@@ -42,9 +42,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <boost/version.hpp>
-#include <boost/shared_ptr.hpp>
 #include <filesystem>
+#include "utils.h"
 #include "env_default.h"
 
 #endif // !defined SCRIBE_COMMON_H

@@ -28,7 +28,7 @@
 using std::string;
 using std::ostringstream;
 using std::map;
-using boost::shared_ptr;
+using std::shared_ptr;
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -276,7 +276,7 @@ void scribeConn::close() {
 }
 
 int
-scribeConn::send(boost::shared_ptr<logentry_vector_t> messages) {
+scribeConn::send(std::shared_ptr<logentry_vector_t> messages) {
   bool fatal;
   int size = messages->size();
   if (!isOpen()) {

@@ -40,7 +40,7 @@
 #include "src/gen-cpp/scribe.h"
 #include "src/gen-cpp/BucketStoreMapping.h"
 
-typedef boost::shared_ptr<scribe::thrift::LogEntry> logentry_ptr_t;
+typedef std::shared_ptr<scribe::thrift::LogEntry> logentry_ptr_t;
 typedef std::vector<logentry_ptr_t> logentry_vector_t;
 typedef std::vector<std::pair<std::string, int>> server_vector_t;
 
@@ -93,7 +93,7 @@ namespace concurrency {
 
   // returns a new instance of read/write mutex.
   // you can choose different implementations based on your needs.
-  boost::shared_ptr<ReadWriteMutex> createReadWriteMutex();
+  std::shared_ptr<ReadWriteMutex> createReadWriteMutex();
 
 } // !namespace scribe::concurrency
 

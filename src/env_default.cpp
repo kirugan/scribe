@@ -33,7 +33,7 @@ using namespace apache::thrift::concurrency;
 using namespace scribe::thrift;
 using namespace scribe::concurrency;
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 /*
  * Network configuration and directory services

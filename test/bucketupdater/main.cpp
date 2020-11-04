@@ -9,10 +9,9 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
-#include <boost/algorithm/string.hpp>
+#include "utils.h"
 
 using namespace std;
-using namespace boost;
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -47,7 +46,7 @@ class BucketStoreMappingHandler : virtual public BucketStoreMappingIf {
           continue;
         }
         vector<string> parts;
-        boost::split(parts, line, boost::is_any_of(","));
+        scribe::str_split(parts, line, ","sv);
         if (parts.size() < 3) {
           cerr << "ignorig line: " << line << endl;
           continue;

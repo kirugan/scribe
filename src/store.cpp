@@ -28,10 +28,8 @@
 #include "common.h"
 #include "scribe_server.h"
 #include "network_dynamic_config.h"
-#include <boost/algorithm/string.hpp>
 
 using namespace std;
-using namespace boost;
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -65,7 +63,7 @@ ConnPool g_connPool;
 const string meta_logfile_prefix = "scribe_meta<new_logfile>: ";
 
 // Checks if we should try sending a dummy Log in the n/w store
-bool shouldSendDummy(boost::shared_ptr<logentry_vector_t> messages) {
+bool shouldSendDummy(std::shared_ptr<logentry_vector_t> messages) {
   size_t size = 0;
   for (auto& entry: *messages) {
     size += entry->message.size();
@@ -77,39 +75,39 @@ bool shouldSendDummy(boost::shared_ptr<logentry_vector_t> messages) {
 }
 
 
-boost::shared_ptr<Store>
+std::shared_ptr<Store>
 Store::createStore(StoreQueue* storeq, const string& type,
                    const string& category, bool readable,
                    bool multi_category) {
   if (0 == type.compare("file")) {
-    return boost::shared_ptr<Store>(new FileStore(storeq, category, multi_category,
+    return std::shared_ptr<Store>(new FileStore(storeq, category, multi_category,
                                           readable));
   } else if (0 == type.compare("buffer")) {
-    return boost::shared_ptr<Store>(new BufferStore(storeq,category, multi_category));
+    return std::shared_ptr<Store>(new BufferStore(storeq,category, multi_category));
   } else if (0 == type.compare("network")) {
-    return boost::shared_ptr<Store>(new NetworkStore(storeq, category,
+    return std::shared_ptr<Store>(new NetworkStore(storeq, category,
                                               multi_category));
   } else if (0 == type.compare("bucket")) {
-    return boost::shared_ptr<Store>(new BucketStore(storeq, category,
+    return std::shared_ptr<Store>(new BucketStore(storeq, category,
                                             multi_category));
   } else if (0 == type.compare("thriftfile")) {
-    return boost::shared_ptr<Store>(new ThriftFileStore(storeq, category,
+    return std::shared_ptr<Store>(new ThriftFileStore(storeq, category,
                                                 multi_category));
   } else if (0 == type.compare("nullptr")) {
-    return boost::shared_ptr<Store>(new NullStore(storeq, category, multi_category));
+    return std::shared_ptr<Store>(new NullStore(storeq, category, multi_category));
   } else if (0 == type.compare("multi")) {
-    return boost::shared_ptr<Store>(new MultiStore(storeq, category, multi_category));
+    return std::shared_ptr<Store>(new MultiStore(storeq, category, multi_category));
   } else if (0 == type.compare("category")) {
-    return boost::shared_ptr<Store>(new CategoryStore(storeq, category,
+    return std::shared_ptr<Store>(new CategoryStore(storeq, category,
                                               multi_category));
   } else if (0 == type.compare("multifile")) {
-    return boost::shared_ptr<Store>(new MultiFileStore(storeq, category,
+    return std::shared_ptr<Store>(new MultiFileStore(storeq, category,
                                                 multi_category));
   } else if (0 == type.compare("thriftmultifile")) {
-    return boost::shared_ptr<Store>(new ThriftMultiFileStore(storeq, category,
+    return std::shared_ptr<Store>(new ThriftMultiFileStore(storeq, category,
                                                       multi_category));
   } else {
-    return boost::shared_ptr<Store>();
+    return std::shared_ptr<Store>();
   }
 }
 
@@ -146,14 +144,14 @@ std::string Store::getStatus() {
   return return_status;
 }
 
-bool Store::readOldest(/*out*/ boost::shared_ptr<logentry_vector_t> messages,
+bool Store::readOldest(/*out*/ std::shared_ptr<logentry_vector_t> messages,
                        struct tm* now) {
   LOG_OPER("[%s] ERROR: attempting to read from a write-only store",
           categoryHandled.c_str());
   return false;
 }
 
-bool Store::replaceOldest(boost::shared_ptr<logentry_vector_t> messages,
+bool Store::replaceOldest(std::shared_ptr<logentry_vector_t> messages,
                           struct tm* now) {
   LOG_OPER("[%s] ERROR: attempting to read from a write-only store",
           categoryHandled.c_str());
@@ -508,7 +506,7 @@ void FileStoreBase::printStats() {
   string filename(filePath);
   filename += "/scribe_stats";
 
-  boost::shared_ptr<FileInterface> stats_file =
+  std::shared_ptr<FileInterface> stats_file =
       FileInterface::createFileInterface(fsType, filename);
   if (!stats_file ||
       !stats_file->createDirectory(filePath) ||
@@ -712,7 +710,7 @@ bool FileStore::openInternal(bool incrementFilename, struct tm* current_time) {
       /* just make a best effort here, and don't error if it fails */
       if (createSymlink && !isBufferFile) {
         string symlinkName = makeFullSymlink();
-        boost::shared_ptr<FileInterface> tmp =
+        std::shared_ptr<FileInterface> tmp =
           FileInterface::createFileInterface(fsType, symlinkName, isBufferFile);
         tmp->deleteFile();
         string symtarget = makeFullFilename(suffix, current_time, false);
@@ -756,17 +754,17 @@ void FileStore::flush() {
   }
 }
 
-boost::shared_ptr<Store> FileStore::copy(const std::string &category) {
+std::shared_ptr<Store> FileStore::copy(const std::string &category) {
   FileStore *store = new FileStore(storeQueue, category, multiCategory,
                                    isBufferFile);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
 
   store->addNewlines = addNewlines;
   store->copyCommon(this);
   return copied;
 }
 
-bool FileStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool FileStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
 
   if (!isOpen()) {
     if (!open()) {
@@ -781,8 +779,8 @@ bool FileStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
 }
 
 // writes messages to either the specified file or the the current writeFile
-bool FileStore::writeMessages(boost::shared_ptr<logentry_vector_t> messages,
-                              boost::shared_ptr<FileInterface> file) {
+bool FileStore::writeMessages(std::shared_ptr<logentry_vector_t> messages,
+                              std::shared_ptr<FileInterface> file) {
   // Data is written to a buffer first, then sent to disk in one call to write.
   // This costs an extra copy of the data, but dramatically improves latency with
   // network based files. (nfs, etc)
@@ -791,7 +789,7 @@ bool FileStore::writeMessages(boost::shared_ptr<logentry_vector_t> messages,
   unsigned long current_size_buffered = 0; // size of data in write_buffer
   unsigned long num_buffered = 0;
   unsigned long num_written = 0;
-  boost::shared_ptr<FileInterface> write_file;
+  std::shared_ptr<FileInterface> write_file;
   unsigned long max_write_size = min(maxSize, maxWriteSize);
 
   // if no file given, use current writeFile
@@ -908,7 +906,7 @@ void FileStore::deleteOldest(struct tm* now) {
   if (index < 0) {
     return;
   }
-  boost::shared_ptr<FileInterface> deletefile = FileInterface::createFileInterface(fsType,
+  std::shared_ptr<FileInterface> deletefile = FileInterface::createFileInterface(fsType,
                                             makeFullFilename(index, now));
   if (lostBytes_) {
     g_Handler->incCounter(categoryHandled, "bytes lost", lostBytes_);
@@ -918,7 +916,7 @@ void FileStore::deleteOldest(struct tm* now) {
 }
 
 // Replace the messages in the oldest file at this timestamp with the input messages
-bool FileStore::replaceOldest(boost::shared_ptr<logentry_vector_t> messages,
+bool FileStore::replaceOldest(std::shared_ptr<logentry_vector_t> messages,
                               struct tm* now) {
   string base_name = makeBaseFilename(now);
   int index = findOldestFile(base_name);
@@ -932,7 +930,7 @@ bool FileStore::replaceOldest(boost::shared_ptr<logentry_vector_t> messages,
   // Need to close and reopen store in case we already have this file open
   close();
 
-  boost::shared_ptr<FileInterface> infile = FileInterface::createFileInterface(fsType,
+  std::shared_ptr<FileInterface> infile = FileInterface::createFileInterface(fsType,
                                           filename, isBufferFile);
 
   // overwrite the old contents of the file
@@ -953,7 +951,7 @@ bool FileStore::replaceOldest(boost::shared_ptr<logentry_vector_t> messages,
   return success;
 }
 
-bool FileStore::readOldest(/*out*/ boost::shared_ptr<logentry_vector_t> messages,
+bool FileStore::readOldest(/*out*/ std::shared_ptr<logentry_vector_t> messages,
                            struct tm* now) {
 
   long loss;
@@ -966,7 +964,7 @@ bool FileStore::readOldest(/*out*/ boost::shared_ptr<logentry_vector_t> messages
   }
   std::string filename = makeFullFilename(index, now);
 
-  boost::shared_ptr<FileInterface> infile = FileInterface::createFileInterface(fsType,
+  std::shared_ptr<FileInterface> infile = FileInterface::createFileInterface(fsType,
                                               filename, isBufferFile);
 
   if (!infile->openRead()) {
@@ -1023,7 +1021,7 @@ bool FileStore::empty(struct tm* now) {
     int suffix =  getFileSuffix(file, base_filename);
     if (-1 != suffix) {
       std::string fullname = makeFullFilename(suffix, now);
-      boost::shared_ptr<FileInterface> file = FileInterface::createFileInterface(fsType,
+      std::shared_ptr<FileInterface> file = FileInterface::createFileInterface(fsType,
                                                                       fullname);
       if (file->fileSize()) {
         return false;
@@ -1047,9 +1045,9 @@ ThriftFileStore::ThriftFileStore(StoreQueue* storeq,
 ThriftFileStore::~ThriftFileStore() {
 }
 
-boost::shared_ptr<Store> ThriftFileStore::copy(const std::string &category) {
+std::shared_ptr<Store> ThriftFileStore::copy(const std::string &category) {
   ThriftFileStore *store = new ThriftFileStore(storeQueue, category, multiCategory);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
 
   store->flushFrequencyMs = flushFrequencyMs;
   store->msgBufferSize = msgBufferSize;
@@ -1057,7 +1055,7 @@ boost::shared_ptr<Store> ThriftFileStore::copy(const std::string &category) {
   return copied;
 }
 
-bool ThriftFileStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool ThriftFileStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
   if (!isOpen()) {
     if (!open()) {
       return false;
@@ -1424,9 +1422,9 @@ void BufferStore::flush() {
   }
 }
 
-boost::shared_ptr<Store> BufferStore::copy(const std::string &category) {
+std::shared_ptr<Store> BufferStore::copy(const std::string &category) {
   BufferStore *store = new BufferStore(storeQueue, category, multiCategory);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
 
   store->bufferSendRate = bufferSendRate;
   store->avgRetryInterval = avgRetryInterval;
@@ -1444,7 +1442,7 @@ boost::shared_ptr<Store> BufferStore::copy(const std::string &category) {
   return copied;
 }
 
-bool BufferStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool BufferStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
 
   if (state == STREAMING || (flushStreaming && state == SENDING_BUFFER)) {
     if (primaryStore->handleMessages(messages)) {
@@ -1564,7 +1562,7 @@ void BufferStore::periodicCheck() {
     unsigned sent = 0;
     try {
       for (sent = 0; sent < bufferSendRate; ++sent) {
-        boost::shared_ptr<logentry_vector_t> messages(new logentry_vector_t);
+        std::shared_ptr<logentry_vector_t> messages(new logentry_vector_t);
         // Reads come complete buffered file
         // this file size is controlled by max_size in the configuration
         if (secondaryStore->readOldest(messages, &nowinfo)) {
@@ -1840,12 +1838,12 @@ void NetworkStore::periodicCheck() {
 bool NetworkStore::loadFromList(const std::string &list, unsigned long defaultPort,
                                 server_vector_t& _return) {
   vector<string> strs;
-  boost::split(strs, list, boost::is_any_of("\t "));
+  scribe::str_split(strs, list, "\t "sv);
   vector<string> split;
   for (auto& str: strs) {
     if (str.find(":") != string::npos) {
       // split the port
-      boost::split(split, str, boost::is_any_of(":"));
+      scribe::str_split(split, str, ":"sv);
       _return.push_back(pair<string, int>(split[0], atoi(split[1].c_str())));
     } else {
       _return.push_back(pair<string, int>(str, defaultPort));
@@ -1892,7 +1890,7 @@ bool NetworkStore::open() {
         LOG_OPER("Logic error: NetworkStore::open unpooledConn is not nullptr"
             " service = %s", serviceName.c_str());
       }
-      unpooledConn = boost::shared_ptr<scribeConn>(new scribeConn(serviceName,
+      unpooledConn = std::shared_ptr<scribeConn>(new scribeConn(serviceName,
             servers, static_cast<int>(timeout)));
       opened = unpooledConn->open();
       if (!opened) {
@@ -1915,7 +1913,7 @@ bool NetworkStore::open() {
         LOG_OPER("Logic error: NetworkStore::open unpooledConn is not nullptr"
             " %s:%lu", remoteHost.c_str(), remotePort);
       }
-      unpooledConn = boost::shared_ptr<scribeConn>(new scribeConn(remoteHost,
+      unpooledConn = std::shared_ptr<scribeConn>(new scribeConn(remoteHost,
           remotePort, static_cast<int>(timeout)));
       opened = unpooledConn->open();
       if (!opened) {
@@ -1956,9 +1954,9 @@ bool NetworkStore::isOpen() {
   return opened;
 }
 
-boost::shared_ptr<Store> NetworkStore::copy(const std::string &category) {
+std::shared_ptr<Store> NetworkStore::copy(const std::string &category) {
   NetworkStore *store = new NetworkStore(storeQueue, category, multiCategory);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
 
   store->useConnPool = useConnPool;
   store->serviceBased = serviceBased;
@@ -1975,7 +1973,7 @@ boost::shared_ptr<Store> NetworkStore::copy(const std::string &category) {
 // If the size of messages is greater than a threshold
 // first try sending an empty vector to catch dfqs
 bool
-NetworkStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+NetworkStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
   int ret;
 
   if (!isOpen()) {
@@ -1987,7 +1985,7 @@ NetworkStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
   }
 
   bool tryDummySend = shouldSendDummy(messages);
-  boost::shared_ptr<logentry_vector_t> dummymessages(new logentry_vector_t);
+  std::shared_ptr<logentry_vector_t> dummymessages(new logentry_vector_t);
 
   if (useConnPool) {
     if (serviceBased || listBased) {
@@ -2084,7 +2082,7 @@ void BucketStore::createBucketsFromBucket(pStoreConf configuration,
 
   for (unsigned int i = 0; i <= numBuckets; ++i) {
 
-    boost::shared_ptr<Store> newstore =
+    std::shared_ptr<Store> newstore =
       createStore(storeQueue, type, categoryHandled, false, multiCategory);
 
     if (!newstore) {
@@ -2163,7 +2161,7 @@ void BucketStore::createBuckets(pStoreConf configuration) {
       goto handle_error;
     }
 
-    boost::shared_ptr<Store> bucket =
+    std::shared_ptr<Store> bucket =
       createStore(storeQueue, type, categoryHandled, false, multiCategory);
 
     buckets.push_back(bucket);
@@ -2370,9 +2368,9 @@ void BucketStore::periodicCheck() {
   }
 }
 
-boost::shared_ptr<Store> BucketStore::copy(const std::string &category) {
+std::shared_ptr<Store> BucketStore::copy(const std::string &category) {
   BucketStore *store = new BucketStore(storeQueue, category, multiCategory);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
 
   store->numBuckets = numBuckets;
   store->bucketType = bucketType;
@@ -2391,11 +2389,11 @@ boost::shared_ptr<Store> BucketStore::copy(const std::string &category) {
  * could not be processed
  * Returns true if all messages were successfully sent, false otherwise.
  */
-bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool BucketStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
   bool success = true;
 
-  boost::shared_ptr<logentry_vector_t> failed_messages(new logentry_vector_t);
-  vector<boost::shared_ptr<logentry_vector_t>> bucketed_messages;
+  std::shared_ptr<logentry_vector_t> failed_messages(new logentry_vector_t);
+  vector<std::shared_ptr<logentry_vector_t>> bucketed_messages;
   bucketed_messages.resize(numBuckets + 1);
 
   if (numBuckets == 0) {
@@ -2411,7 +2409,7 @@ bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) 
 
     if (!bucketed_messages[bucket]) {
       bucketed_messages[bucket] =
-        boost::shared_ptr<logentry_vector_t> (new logentry_vector_t);
+        std::shared_ptr<logentry_vector_t> (new logentry_vector_t);
     }
 
     bucketed_messages[bucket]->push_back(entry);
@@ -2419,14 +2417,14 @@ bool BucketStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) 
 
   // handle all batches of messages
   for (unsigned long i = 0; i <= numBuckets; i++) {
-    boost::shared_ptr<logentry_vector_t> batch = bucketed_messages[i];
+    std::shared_ptr<logentry_vector_t> batch = bucketed_messages[i];
 
     if (batch) {
 
       if (removeKey) {
         // Create new set of messages with keys removed
-        boost::shared_ptr<logentry_vector_t> key_removed =
-          boost::shared_ptr<logentry_vector_t> (new logentry_vector_t);
+        std::shared_ptr<logentry_vector_t> key_removed =
+          std::shared_ptr<logentry_vector_t> (new logentry_vector_t);
 
         for (auto& batchEntry: *batch) {
           logentry_ptr_t entry = logentry_ptr_t(new LogEntry);
@@ -2552,9 +2550,9 @@ NullStore::NullStore(StoreQueue* storeq,
 NullStore::~NullStore() {
 }
 
-boost::shared_ptr<Store> NullStore::copy(const std::string &category) {
+std::shared_ptr<Store> NullStore::copy(const std::string &category) {
   NullStore *store = new NullStore(storeQueue, category, multiCategory);
-  boost::shared_ptr<Store> copied = boost::shared_ptr<Store>(store);
+  std::shared_ptr<Store> copied = std::shared_ptr<Store>(store);
   return copied;
 }
 
@@ -2573,7 +2571,7 @@ void NullStore::configure(pStoreConf configuration, pStoreConf parent) {
 void NullStore::close() {
 }
 
-bool NullStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool NullStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
   g_Handler->incCounter(categoryHandled, "ignored", messages->size());
   return true;
 }
@@ -2581,12 +2579,12 @@ bool NullStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
 void NullStore::flush() {
 }
 
-bool NullStore::readOldest(/*out*/ boost::shared_ptr<logentry_vector_t> messages,
+bool NullStore::readOldest(/*out*/ std::shared_ptr<logentry_vector_t> messages,
                        struct tm* now) {
   return true;
 }
 
-bool NullStore::replaceOldest(boost::shared_ptr<logentry_vector_t> messages,
+bool NullStore::replaceOldest(std::shared_ptr<logentry_vector_t> messages,
                               struct tm* now) {
   return true;
 }
@@ -2607,16 +2605,16 @@ MultiStore::MultiStore(StoreQueue* storeq,
 MultiStore::~MultiStore() {
 }
 
-boost::shared_ptr<Store> MultiStore::copy(const std::string &category) {
+std::shared_ptr<Store> MultiStore::copy(const std::string &category) {
   MultiStore *store = new MultiStore(storeQueue, category, multiCategory);
   store->report_success = this->report_success;
-  boost::shared_ptr<Store> tmp_copy;
+  std::shared_ptr<Store> tmp_copy;
   for (auto& itemStore: stores) {
     tmp_copy = itemStore->copy(category);
     store->stores.push_back(tmp_copy);
   }
 
-  return boost::shared_ptr<Store>(store);
+  return std::shared_ptr<Store>(store);
 }
 
 bool MultiStore::open() {
@@ -2662,7 +2660,7 @@ void MultiStore::configure(pStoreConf configuration, pStoreConf parent) {
    */
   pStoreConf cur_conf;
   string cur_type;
-  boost::shared_ptr<Store> cur_store;
+  std::shared_ptr<Store> cur_store;
   string report_preference;
 
   // find reporting preference
@@ -2727,7 +2725,7 @@ void MultiStore::close() {
   }
 }
 
-bool MultiStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
+bool MultiStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
   bool all_result = true;
   bool any_result = false;
   bool cur_result;
@@ -2771,12 +2769,12 @@ CategoryStore::CategoryStore(StoreQueue* storeq,
 CategoryStore::~CategoryStore() {
 }
 
-boost::shared_ptr<Store> CategoryStore::copy(const std::string &category) {
+std::shared_ptr<Store> CategoryStore::copy(const std::string &category) {
   CategoryStore *store = new CategoryStore(storeQueue, category, multiCategory);
 
   store->modelStore = modelStore->copy(category);
 
-  return boost::shared_ptr<Store>(store);
+  return std::shared_ptr<Store>(store);
 }
 
 bool CategoryStore::open() {
@@ -2849,16 +2847,16 @@ void CategoryStore::close() {
   }
 }
 
-bool CategoryStore::handleMessages(boost::shared_ptr<logentry_vector_t> messages) {
-  boost::shared_ptr<logentry_vector_t> singleMessage(new logentry_vector_t);
-  boost::shared_ptr<logentry_vector_t> failed_messages(new logentry_vector_t);
+bool CategoryStore::handleMessages(std::shared_ptr<logentry_vector_t> messages) {
+  std::shared_ptr<logentry_vector_t> singleMessage(new logentry_vector_t);
+  std::shared_ptr<logentry_vector_t> failed_messages(new logentry_vector_t);
   logentry_vector_t::iterator message_iter;
 
   for (message_iter = messages->begin();
       message_iter != messages->end();
       ++message_iter) {
-    map<string, boost::shared_ptr<Store>>::iterator store_iter;
-    boost::shared_ptr<Store> store;
+    map<string, std::shared_ptr<Store>>::iterator store_iter;
+    std::shared_ptr<Store> store;
     string category = (*message_iter)->category;
 
     store_iter = stores.find(category);

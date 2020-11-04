@@ -47,7 +47,7 @@ class scribeConn {
   bool isOpen();
   bool open();
   void close();
-  int send(boost::shared_ptr<logentry_vector_t> messages);
+  int send(std::shared_ptr<logentry_vector_t> messages);
 
  private:
   std::string connectionString();
@@ -70,7 +70,7 @@ class scribeConn {
 };
 
 // key is hostname:port or the service
-typedef std::map<std::string, boost::shared_ptr<scribeConn>> conn_map_t;
+typedef std::map<std::string, std::shared_ptr<scribeConn>> conn_map_t;
 
 // Scribe class to manage connection pooling
 // Maintains a map of (<host,port> or service) to scribeConn class.
@@ -89,15 +89,15 @@ class ConnPool {
   void close(const std::string &service);
 
   int send(const std::string& host, unsigned long port,
-            boost::shared_ptr<logentry_vector_t> messages);
+            std::shared_ptr<logentry_vector_t> messages);
   int send(const std::string &service,
-            boost::shared_ptr<logentry_vector_t> messages);
+            std::shared_ptr<logentry_vector_t> messages);
 
  private:
-  bool openCommon(const std::string &key, boost::shared_ptr<scribeConn> conn);
+  bool openCommon(const std::string &key, std::shared_ptr<scribeConn> conn);
   void closeCommon(const std::string &key);
   int sendCommon(const std::string &key,
-                  boost::shared_ptr<logentry_vector_t> messages);
+                  std::shared_ptr<logentry_vector_t> messages);
 
  protected:
   std::string makeKey(const std::string& name, unsigned long port);

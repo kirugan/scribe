@@ -30,9 +30,9 @@
 using std::fstream;
 using std::string;
 using std::ios_base;
-using boost::shared_ptr;
+using std::shared_ptr;
 
-boost::shared_ptr<FileInterface> FileInterface::createFileInterface(const std::string& type,
+std::shared_ptr<FileInterface> FileInterface::createFileInterface(const std::string& type,
                                                                     const std::string& name,
                                                                     bool framed) {
   if (0 == type.compare("std")) {

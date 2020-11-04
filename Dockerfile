@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Last Package Update & Install
 RUN apt-get update && apt-get install -y curl cmake supervisor openssh-server net-tools iputils-ping vim \
- make autoconf automake flex bison libtool libevent-dev pkg-config libssl-dev libboost-all-dev libbz2-dev build-essential g++ python-dev git
+ make autoconf automake flex bison libtool libevent-dev pkg-config libssl-dev libbz2-dev build-essential g++ python-dev git
 
 # Facebook Scribe
 # Thrift

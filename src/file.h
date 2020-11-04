@@ -29,7 +29,7 @@ class FileInterface {
   FileInterface(const std::string& name, bool framed);
   virtual ~FileInterface();
 
-  static boost::shared_ptr<FileInterface> createFileInterface(const std::string& type,
+  static std::shared_ptr<FileInterface> createFileInterface(const std::string& type,
                                                               const std::string& name,
                                                               bool framed = false);
   static std::vector<std::string> list(const std::string& path, const std::string& fsType);
