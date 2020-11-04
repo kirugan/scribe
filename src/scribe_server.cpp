@@ -32,7 +32,7 @@ using namespace facebook;
 using namespace scribe::thrift;
 using namespace std;
 
-boost::shared_ptr<scribeHandler> g_Handler;
+std::shared_ptr<scribeHandler> g_Handler;
 
 #define DEFAULT_CHECK_PERIOD       5
 #define DEFAULT_MAX_MSG_PER_SECOND 0
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     // seed random number generation with something reasonably unique
     srand(time(nullptr) ^ getpid());
 
-    g_Handler = boost::shared_ptr<scribeHandler>(new scribeHandler(port, config_file));
+    g_Handler = std::shared_ptr<scribeHandler>(new scribeHandler(port, config_file));
     g_Handler->initialize();
 
     scribe::startServer(); // never returns

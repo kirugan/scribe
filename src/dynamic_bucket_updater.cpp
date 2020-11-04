@@ -10,7 +10,7 @@ using namespace apache::thrift::transport;
 using namespace facebook;
 using namespace facebook::fb303;
 using namespace scribe::thrift;
-extern boost::shared_ptr<scribeHandler> g_Handler;
+extern std::shared_ptr<scribeHandler> g_Handler;
 
 DynamicBucketUpdater* DynamicBucketUpdater::instance_ = nullptr;
 Mutex DynamicBucketUpdater::instanceLock_;
@@ -340,8 +340,7 @@ bool DynamicBucketUpdater::updateInternal(
     catMap_.erase(catIter);
   }
 
-  boost::shared_ptr<TSocket> socket = boost::shared_ptr<TSocket>(
-                                new TSocket(remoteHost, remotePort));
+  auto socket = std::shared_ptr<TSocket>(new TSocket(remoteHost, remotePort));
 
   if (!socket) {
     addStatValue(DynamicBucketUpdater::FB303_ERR_CONNECT, 1);
@@ -361,11 +360,9 @@ bool DynamicBucketUpdater::updateInternal(
   socket->setRecvTimeout(recvTimeout);
   socket->setSendTimeout(sendTimeout);
 
-  boost::shared_ptr<TFramedTransport> framedTransport = boost::shared_ptr<TFramedTransport>(
-                new TFramedTransport(socket));
+  auto framedTransport = std::shared_ptr<TFramedTransport>(new TFramedTransport(socket));
   framedTransport->open();
-  boost::shared_ptr<TBinaryProtocol> protocol = boost::shared_ptr<TBinaryProtocol>(
-                                      new TBinaryProtocol(framedTransport));
+  auto protocol = std::shared_ptr<TBinaryProtocol>(new TBinaryProtocol(framedTransport));
 
   // no strict version checking
   protocol->setStrict(false, false);

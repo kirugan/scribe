@@ -53,10 +53,10 @@ class scribeConn {
   std::string connectionString();
 
  protected:
-  boost::shared_ptr<apache::thrift::transport::TSocket> socket;
-  boost::shared_ptr<apache::thrift::transport::TFramedTransport> framedTransport;
-  boost::shared_ptr<apache::thrift::protocol::TBinaryProtocol> protocol;
-  boost::shared_ptr<scribe::thrift::scribeClient> resendClient;
+  std::shared_ptr<apache::thrift::transport::TSocket> socket;
+  std::shared_ptr<apache::thrift::transport::TFramedTransport> framedTransport;
+  std::shared_ptr<apache::thrift::protocol::TBinaryProtocol> protocol;
+  std::shared_ptr<scribe::thrift::scribeClient> resendClient;
 
   unsigned refCount;
 

@@ -17,5 +17,4 @@ add_library(dynamicbucketupdater STATIC src/gen-cpp/BucketStoreMapping.cpp src/g
 
 target_link_libraries(scribed boost_system boost_filesystem scribe thrift fb303 dynamicbucketupdater thriftnb event pthread)
 
-# todo -Wall
-set (CMAKE_CXX_FLAGS  "-std=c++0x -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -DBOOST_FILESYSTEM_VERSION=2")
+set (CMAKE_CXX_FLAGS  "-std=c++0x -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H ")

@@ -19,11 +19,25 @@
 $GLOBALS['THRIFT_ROOT'] = '/usr/local/src/thrift/lib/php/src';
 $GLOBALS['SCRIBE_ROOT'] = '/usr/local/src/scribe/if/gen-php';
 
-include_once $GLOBALS['SCRIBE_ROOT'].'/scribe/scribe.php';
-include_once $GLOBALS['THRIFT_ROOT'].'/protocol/TBinaryProtocol.php';
-include_once $GLOBALS['THRIFT_ROOT'].'/transport/TFramedTransport.php';
-include_once $GLOBALS['THRIFT_ROOT'].'/transport/TSocketPool.php';
-require_once $GLOBALS['SCRIBE_ROOT'].'/bucketupdater/BucketStoreMapping.php';
+use Thrift\Transport\TSocketPool;
+use Thrift\Transport\TFramedTransport;
+use Thrift\Protocol\TBinaryProtocol;
+
+spl_autoload_register(function($className) {
+    $file = $GLOBALS['SCRIBE_ROOT'] . "/$className.php";
+    if (file_exists($file)) {
+        require_once $file;
+    }
+    if (strpos($className, 'Thrift') !== false) {
+        $className = str_replace('Thrift\\', '', $className);
+        $className = str_replace('\\', '/', $className);
+
+        require_once "/usr/local/src/thrift/lib/php/lib/{$className}.php";
+    }
+});
+
+include_once $GLOBALS['SCRIBE_ROOT'].'/scribeClient.php';
+include_once $GLOBALS['THRIFT_ROOT'].'/autoload.php';
 
 function reload_test($file) {
   static $numTest = 0;
@@ -183,7 +197,7 @@ function bucket_test() {
 
 function strange_input_test() {
   $messages = array();
-  $msg = new LogEntry;
+  $msg = new LogEntry();
   $msg->category = '%xa\n\ndfsdfjfdsjlkasjlkjerl%slkjasdf%dlkjasdlkjf\\\\\\\\\\\\\adskljasdl;kjsg[pa;lksdkjmdkjfkjfkjkdjfslkkjlaasdfasdfasdfasdfasdfasdflkhjlaksjdlkfjalksjdflkjasdflkjsdaflkjsdflkjadsflkjjsadflkkjsdflkjjsdfalkjfdsakljfsdaljk';
   $msg->message = '%xlasdlkfjalskjlkjasdklg\\\\\\\/////\\\/\\//\\;klf;klds;klfsdaflsk;kl;lk;sfkl;sdf%d<><>><><<>>l;kadsl;kadsl;k;klkl;fsdal;ksdfa;klsaf;lsdfl;kfsdl;ksdflksdaf;lkfds;lkfsd;lksdafl;kf;klsflk;sdf;klsdfka;lskdl;fkls;dfalk;fsdl;ksfadkl;sfdlk;sfadlk;fsld;kasflkad;klfsad;lksdfal;ksfda;lksdaflk;sdfal;kl;sdfakl;sdaf;klsdfa;klsdafk;lsdfakl;sdafkl;sdfak;lasdfkl;sdaflk;sdaflk;sdafkl;sadf;lksdafl;ksdaf;klsdafl;ksdafl;ksdfak;lsdafkl;sdfl;kdsfakl;sdaf;lkdsafk;lsdfkl;sdfakl;fdsa;klfsdk;lasfdk;lfsdakl;sdfak;lfsdakl;sdfakl;sfdak;lsdfaklfdsakl;sdfak;lsfdak;lsfdakl;sfdakl;sdfak;lsdfak;lsdfak;lsdfak;lsfdakl;sdfak;lsdfakl;sdfak;lsdfakl;sdfk;lfds;alkadfsk;lsdfak;ldfsak;lsdfa;klsfdakl;sdfak;lsdfakl;sdfak;lsdfak;lsdf;klsdfa;klsdfak;lsdfak;lfsdakl;sdfakl;fdsak;lsdfak;lsdfakl;sdfak;lsdfak;lsdfa;klsdfa;klsfdk;alsfadkl;sdfakl;sdfkl;fdsakl;sfdal;ksdfak;las;lkfsda;lksdfak;lsdfak;lsdfakl;kfds;lk;l;sdf;klfdsl;ksdfal;ksdl;kds;lksdkl;dsfal;kdsfak;ldsfa;kldfasl;kdfasl;kdafsl;kadfskl;dfsa;kldfsak;ldfsakl;dfask;ldfsak;ldfsal;kdfsakl;dfsak;ldfsak;k;dlfsa;lkadsf;kladsf;lkdfsa;lkdsaf;k;lkdfsakl;dfsal;kdfsa;kldsaf;lkdfsa;kldasf;kldfas;kldsaf;klasdfk;lsadf;klsdafk;ldsaf;lkasdfk;ldfas;kladfs;kldfaskl;dfsa;kldfsakl;dfsalk;dfska;kladsfk;ladfs;kladsfkl;adssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\n\n\nssssssssssssssssssssssssssssssf';
   $messages []= $msg;

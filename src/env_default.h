@@ -29,6 +29,7 @@
 #include "thrift/transport/TSocketPool.h"
 #include "thrift/transport/TServerSocket.h"
 #include "thrift/transport/TTransportUtils.h"
+#include "thrift/transport/TNonblockingServerSocket.h"
 #include "thrift/transport/THttpClient.h"
 #include "thrift/transport/TFileTransport.h"
 #include "thrift/transport/TBufferTransports.h"

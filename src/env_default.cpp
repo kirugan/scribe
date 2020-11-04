@@ -97,12 +97,12 @@ uint32_t scribe::strhash::hash32(const char *s) {
  */
 // note: this function uses global g_Handler.
 void scribe::startServer() {
-  boost::shared_ptr<TProcessor> processor(new scribeProcessor(g_Handler));
+  const std::shared_ptr<TProcessor> processor(new scribeProcessor(g_Handler));
   /* This factory is for binary compatibility. */
-  boost::shared_ptr<TProtocolFactory> protocol_factory(
+  const std::shared_ptr<TProtocolFactory> protocol_factory(
     new TBinaryProtocolFactory(0, 0, false, false)
   );
-  boost::shared_ptr<ThreadManager> thread_manager;
+  std::shared_ptr<ThreadManager> thread_manager;
 
   if (g_Handler->numThriftServerThreads > 1) {
     // create a ThreadManager to process incoming calls
@@ -110,16 +110,19 @@ void scribe::startServer() {
       g_Handler->numThriftServerThreads
     );
 
-    shared_ptr<PosixThreadFactory> thread_factory(new PosixThreadFactory());
+    std::shared_ptr<PosixThreadFactory> thread_factory(new PosixThreadFactory());
     thread_manager->threadFactory(thread_factory);
     thread_manager->start();
   }
+  const std::shared_ptr<ThreadManager> thread_manager2 = thread_manager;
 
-  shared_ptr<TNonblockingServer> server(new TNonblockingServer(
+  const std::shared_ptr<TNonblockingServerSocket> socket(new TNonblockingServerSocket(g_Handler->port));
+  // todo(kirugan) uncomment after everything below in function
+  std::shared_ptr<TNonblockingServer> server(new TNonblockingServer(
                                           processor,
                                           protocol_factory,
-                                          g_Handler->port,
-                                          thread_manager
+                                          socket,
+                                          thread_manager2
                                         ));
   g_Handler->setServer(server);
 

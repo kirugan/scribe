@@ -212,8 +212,8 @@ bool scribeConn::open() {
   try {
 
     socket = serviceBased ?
-      shared_ptr<TSocket>(new TSocketPool(serverList)) :
-      shared_ptr<TSocket>(new TSocket(remoteHost, remotePort));
+      std::shared_ptr<TSocket>(new TSocketPool(serverList)) :
+      std::shared_ptr<TSocket>(new TSocket(remoteHost, remotePort));
 
     if (!socket) {
       throw std::runtime_error("Failed to create socket");
@@ -234,16 +234,16 @@ bool scribeConn::open() {
      */
     socket->setLinger(0, 0);
 
-    framedTransport = shared_ptr<TFramedTransport>(new TFramedTransport(socket));
+    framedTransport = std::shared_ptr<TFramedTransport>(new TFramedTransport(socket));
     if (!framedTransport) {
       throw std::runtime_error("Failed to create framed transport");
     }
-    protocol = shared_ptr<TBinaryProtocol>(new TBinaryProtocol(framedTransport));
+    protocol = std::shared_ptr<TBinaryProtocol>(new TBinaryProtocol(framedTransport));
     if (!protocol) {
       throw std::runtime_error("Failed to create protocol");
     }
     protocol->setStrict(false, false);
-    resendClient = shared_ptr<scribeClient>(new scribeClient(protocol));
+    resendClient = std::shared_ptr<scribeClient>(new scribeClient(protocol));
     if (!resendClient) {
       throw std::runtime_error("Failed to create network client");
     }
