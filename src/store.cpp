@@ -32,7 +32,6 @@
 
 using namespace std;
 using namespace boost;
-using namespace boost::filesystem;
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
@@ -1224,7 +1223,7 @@ bool ThriftFileStore::openInternal(bool incrementFilename, struct tm* current_ti
 
 bool ThriftFileStore::createFileDirectory () {
   try {
-    boost::filesystem::create_directories(filePath);
+    std::filesystem::create_directories(filePath);
   } catch(const std::exception& e) {
     LOG_OPER("Exception < %s > in ThriftFileStore::createFileDirectory for path %s",
       e.what(),filePath.c_str());

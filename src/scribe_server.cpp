@@ -228,7 +228,7 @@ bool scribeHandler::createCategoryFromModel(
 
   // Make sure the category name is sane.
   try {
-    string clean_path = boost::filesystem::path(category).string();
+    string clean_path = std::filesystem::path(category).string();
 
     if (clean_path.compare(category) != 0) {
       LOG_OPER("Category not a valid boost filename");

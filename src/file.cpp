@@ -233,7 +233,7 @@ StdFile::readNext(std::string& _return) {
 unsigned long StdFile::fileSize() {
   unsigned long size = 0;
   try {
-    size = boost::filesystem::file_size(filename.c_str());
+    size = std::filesystem::file_size(filename.c_str());
   } catch(const std::exception& e) {
     LOG_OPER("Failed to get size for file <%s> error <%s>", filename.c_str(), e.what());
     size = 0;
@@ -243,19 +243,11 @@ unsigned long StdFile::fileSize() {
 
 void StdFile::listImpl(const std::string& path, std::vector<std::string>& _return) {
   try {
-    if (boost::filesystem::exists(path)) {
-      boost::filesystem::directory_iterator dir_iter(path), end_iter;
+    if (std::filesystem::exists(path)) {
+      std::filesystem::directory_iterator dir_iter(path), end_iter;
 
       for ( ; dir_iter != end_iter; ++dir_iter) {
-#if BOOST_VERSION > 104900
         _return.push_back(dir_iter->path().filename().string());
-#elif BOOST_VERSION < 104400
-        _return.push_back(dir_iter->filename());
-#elif defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-        _return.push_back(dir_iter->filename());
-#else
-        _return.push_back(dir_iter->path().filename().string());
-#endif
       }
     }
   } catch (const std::exception& e) {
@@ -265,12 +257,12 @@ void StdFile::listImpl(const std::string& path, std::vector<std::string>& _retur
 }
 
 void StdFile::deleteFile() {
-  boost::filesystem::remove(filename);
+  std::filesystem::remove(filename);
 }
 
 bool StdFile::createDirectory(std::string path) {
   try {
-    boost::filesystem::create_directories(path);
+    std::filesystem::create_directories(path);
   } catch(const std::exception& e) {
     LOG_OPER("Exception < %s > in StdFile::createDirectory for path %s ",
       e.what(),path.c_str());

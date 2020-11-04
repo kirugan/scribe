@@ -1,10 +1,9 @@
-#
-# Dockerfile - Facebook Scribe
-#
-FROM     ubuntu:16.04
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Last Package Update & Install
-RUN apt-get update && apt-get install -y curl python-pip cmake supervisor openssh-server net-tools iputils-ping vim \
+RUN apt-get update && apt-get install -y curl cmake supervisor openssh-server net-tools iputils-ping vim \
  make autoconf automake flex bison libtool libevent-dev pkg-config libssl-dev libboost-all-dev libbz2-dev build-essential g++ python-dev git
 
 # Facebook Scribe
@@ -26,7 +25,9 @@ RUN cd $thrift_src/lib/py \
  && cd $thrift_src/contrib/fb303/py \
  && python setup.py install
 
-RUN pip install six
+RUN curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py && \
+    python2 get-pip.py && \
+    pip2 install six
 
 # Scribe
 ENV scribe_src /usr/local/src/scribe

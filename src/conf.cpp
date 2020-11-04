@@ -19,12 +19,10 @@
 // @author Jason Sobel
 // @author John Song
 
-#include <boost/algorithm/string.hpp>
 #include "common.h"
 #include "conf.h"
 #include "scribe_server.h"
 
-using namespace boost;
 using namespace std;
 
 extern std::shared_ptr<scribeHandler> g_Handler;

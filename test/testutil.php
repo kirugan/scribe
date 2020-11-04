@@ -214,6 +214,8 @@ function resultFileChecker($filename, $clientname, &$last_entry) {
       if ($client == $clientname) {
         $results["count"]++;
 
+        // todo remove me, it's here because of E_NOTICE: A non well formed numeric value encountered
+        error_reporting(E_ALL | E_WARNING | E_PARSE);
         if ($entry != $last_entry + 1) {
           $results["out_of_order"]++;
           print("Out of order entry: <$entry> follows <$last_entry>\n");

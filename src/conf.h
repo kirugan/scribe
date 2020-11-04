@@ -32,7 +32,7 @@
  * changing the code in this class.
  */
 class StoreConf;
-typedef boost::shared_ptr<StoreConf> pStoreConf;
+typedef std::shared_ptr<StoreConf> pStoreConf;
 typedef std::map<std::string, std::string> string_map_t;
 typedef std::map<std::string, pStoreConf> store_conf_map_t;
 
