@@ -36,10 +36,6 @@ RUN cd $scribe_src && \
        thrift --gen cpp:pure_enums -o src/ ./if/bucketupdater.thrift && \
        cmake . && make
 
-# ENV
-ENV LD_LIBRARY_PATH /usr/local/lib
-RUN echo "export LD_LIBRARY_PATH=/usr/local/lib" >> /etc/profile
-
 # Scribe python module
 RUN cd $scribe_src/lib/py && python setup.py install
 
