@@ -54,5 +54,3 @@ RUN mkdir /tmp/scribetest
 RUN ln -s /usr/local/src/scribe/if/gen-php/ /usr/local/src/thrift/lib/php/src/packages
 
 WORKDIR /usr/local/src/scribe
-
-RUN make -C /usr/local/src/scribe/test/resultChecker/

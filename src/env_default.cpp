@@ -114,7 +114,7 @@ void scribe::startServer() {
     thread_manager->threadFactory(thread_factory);
     thread_manager->start();
   }
-  const std::shared_ptr<ThreadManager> thread_manager2 = thread_manager;
+  const std::shared_ptr<ThreadManager> thread_manager2 = std::move(thread_manager);
 
   const std::shared_ptr<TNonblockingServerSocket> socket(new TNonblockingServerSocket(g_Handler->port));
   // todo(kirugan) uncomment after everything below in function

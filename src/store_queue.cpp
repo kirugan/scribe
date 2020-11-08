@@ -97,7 +97,7 @@ void StoreQueue::addMessage(std::shared_ptr<LogEntry> entry) {
     msgQueue->push_back(entry);
     msgQueueSize += entry->message.size();
 
-    waitForWork = (msgQueueSize >= targetWriteSize) ? true : false;
+    waitForWork = msgQueueSize >= targetWriteSize;
     pthread_mutex_unlock(&msgMutex);
 
     // Wake up store thread if we have enough messages
@@ -313,12 +313,12 @@ void StoreQueue::processFailedMessages(std::shared_ptr<logentry_vector_t> messag
     // Save failed messages
     failedMessages = messages;
 
-    LOG_OPER("[%s] WARNING: Re-queueing %lu messages!",
+    LOG_OPER("[%s] WARNING: Re-queueing %llu messages!",
              categoryHandled.c_str(), messages->size());
     g_Handler->incCounter(categoryHandled, "requeue", messages->size());
   } else {
     // record messages as being lost
-    LOG_OPER("[%s] WARNING: Lost %lu messages!",
+    LOG_OPER("[%s] WARNING: Lost %llu messages!",
              categoryHandled.c_str(), messages->size());
     g_Handler->incCounter(categoryHandled, "lost", messages->size());
   }
